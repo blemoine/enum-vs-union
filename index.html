@@ -1,46 +1,82 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8"/>
+  <head>
+    <meta charset="utf-8" />
     <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
 
     <title>Union vs Enum</title>
 
-    <link rel="stylesheet" href="dist/reset.css"/>
-    <link rel="stylesheet" href="dist/reveal.css"/>
-    <link rel="stylesheet" href="dist/theme/white.css"/>
+    <link rel="stylesheet" href="dist/reset.css" />
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/white.css" />
 
     <!-- Theme used for syntax highlighted code -->
-    <link rel="stylesheet" href="plugin/highlight/monokai.css"/>
+    <link rel="stylesheet" href="plugin/highlight/monokai.css" />
 
     <style>
-        code {
-            border: 1px solid #333;
-            padding-left: 10px;
-            padding-right: 10px;
-        }
-
+      code {
+        border: 1px solid #333;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
     </style>
-</head>
-<body>
-<div class="reveal">
-    <div class="slides">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
         <section>
-            <h2>Enum vs Union types</h2>
+          <h2>Enum vs Union types</h2>
         </section>
 
         <section>
-            <h2>Enum?</h2>
-            <pre><code data-trim class="typescript">
+          <h2>Who am I?</h2>
+          <ul
+            style="
+              display: inline-block;
+              width: 700px;
+              vertical-align: top;
+              position: relative;
+            "
+          >
+            <li>Benoît Lemoine</li>
+            <li>
+              Fullstack developer <br />(TS, Scala, Rust, ...) <br />
+              especially interested in functional programming and type
+              systems<br />
+            </li>
+            <li>
+              Working at <a href="https://www.busbud.com">Busbud</a>; we're
+              hiring!
+            </li>
+            <li>
+              <a href="https://lemoine-benoit.medium.com/"
+                >https://lemoine-benoit.medium.com/</a
+              >
+            </li>
+
+            <li>
+              <a href="https://twitter.com/benoit_lemoine">@benoit_lemoine</a>
+            </li>
+          </ul>
+          <img
+            style="display: inline-block; width: 200px; vertical-align: top"
+            src="img/Moloch.png"
+            alt="Most beautiful animal in the world: the Moloch (aka. thorny devil)"
+          />
+        </section>
+
+        <section>
+          <h2>Enum?</h2>
+          <pre><code data-trim class="typescript">
 enum Color {
     RED, GREEN, BLUE
 }
 const c:Color = Color.RED;
               </code></pre>
-            <pre class="fragment"><code data-trim class="typescript">
+          <pre class="fragment"><code data-trim class="typescript">
 let Color;
     (function (Color) {
         Color[Color["RED"] = 0] = "RED";
@@ -48,13 +84,13 @@ let Color;
         Color[Color["BLUE"] = 2] = "BLUE";
     })(Color || (Color = {}));
 })(Other || (Other = {}));
-const c = Color.RED;
+const c = Color.RED; // is really 0
               </code></pre>
         </section>
 
         <section>
-            <h2>String Enum?</h2>
-            <pre><code data-trim class="typescript">
+          <h2>String Enum?</h2>
+          <pre><code data-trim class="typescript">
 enum Color {
     RED = "red",
     GREEN = "green",
@@ -62,20 +98,20 @@ enum Color {
 }
 const c:Color = Color.RED;
               </code></pre>
-            <pre class="fragment"><code data-trim class="typescript">
+          <pre class="fragment"><code data-trim class="typescript">
 let Color;
     (function (Color) {
         Color["RED"] = "red";
         Color["GREEN"] = "green";
         Color["BLUE"] = "blue";
     })(Color || (Color = {}));
-const c = Color.RED;
+const c = Color.RED; // is really "red"
               </code></pre>
         </section>
 
         <section>
-            <h2>const String Enum?</h2>
-            <pre><code data-trim class="typescript">
+          <h2>const String Enum?</h2>
+          <pre><code data-trim class="typescript">
 const enum Color {
     RED = "red",
     GREEN = "green",
@@ -83,21 +119,36 @@ const enum Color {
 }
 const c: Color = Color.RED;
               </code></pre>
-            <pre class="fragment"><code data-trim class="typescript">
+          <pre class="fragment"><code data-trim class="typescript">
 const c = "red" /* Color.RED */;
               </code></pre>
+          <a
+            href="https://www.typescriptlang.org/docs/handbook/enums.html#const-enum-pitfalls"
+            class="fragment"
+            >Lots of pitfall</a
+          >
         </section>
 
         <section>
-            <h2>Union types?</h2>
-            <pre><code data-trim class="typescript">
+          <h2>Union types?</h2>
+          <pre><code data-trim class="typescript">
 type Color = "red" | "green" | "blue"
               </code></pre>
         </section>
 
         <section>
-            <h2>is string member of the enum?</h2>
-            <pre><code data-trim class="typescript">
+          <h2>Union types as const?</h2>
+          <pre><code data-trim class="typescript">
+const colors = ['red', 'green', 'blue'] as const;
+//    ^?  const colors: readonly ["red", "green", "blue"]
+type Color = typeof colors[number];
+//   ^? type Color = "red" | "green" | "blue"
+              </code></pre>
+        </section>
+
+        <section>
+          <h2>is string member of the enum?</h2>
+          <pre><code data-trim class="typescript">
 enum Color {
     RED = 'red',
     GREEN = 'green',
@@ -109,7 +160,7 @@ function isColor(str:string): str is Color {
 }
               </code></pre>
 
-            <pre class="fragment"><code data-trim class="typescript">
+          <pre class="fragment"><code data-trim class="typescript">
 const colors = ['red', 'green', 'blue'] as const;
 type Color = typeof colors[number];
 //   ^? type Color = "red" | "green" | "blue"
@@ -121,8 +172,8 @@ function isColor(str:string): str is Color {
         </section>
 
         <section>
-            <h2>serialize</h2>
-            <pre><code data-trim class="typescript">
+          <h2>serialize</h2>
+          <pre><code data-trim class="typescript">
 enum Color {
     RED = 'red',
     GREEN = 'green',
@@ -132,7 +183,7 @@ function serialize(str: Color): string {
     return str;
 }
               </code></pre>
-            <pre class="fragment"><code data-trim class="typescript">
+          <pre class="fragment"><code data-trim class="typescript">
 const colors = ['red', 'green', 'blue'] as const;
 type Color = typeof colors[number];
 //   ^? type Color = "red" | "green" | "blue"
@@ -144,8 +195,8 @@ function serialize(str: Color): string {
         </section>
 
         <section>
-            <h2>calling</h2>
-            <pre><code data-trim class="typescript">
+          <h2>calling</h2>
+          <pre><code data-trim class="typescript">
 enum Color {
     RED = 'red',
     GREEN = 'green',
@@ -156,7 +207,7 @@ const c1: Color = "red";
 
 const c2: Color = Color.RED;
               </code></pre>
-            <pre class="fragment"><code data-trim class="typescript">
+          <pre class="fragment"><code data-trim class="typescript">
 const colors = ['red', 'green', 'blue'] as const;
 type Color = typeof colors[number];
 
@@ -165,8 +216,8 @@ const c1: Color = "red";
         </section>
 
         <section>
-            <h2>listing</h2>
-            <pre><code data-trim class="typescript">
+          <h2>listing</h2>
+          <pre><code data-trim class="typescript">
 enum Color {
     RED = 'red',
     GREEN = 'green',
@@ -177,7 +228,7 @@ function listing(): readonly Color[] {
     return Object.values(Color);
 }
               </code></pre>
-            <pre class="fragment"><code data-trim class="typescript">
+          <pre class="fragment"><code data-trim class="typescript">
 const colors = ['red', 'green', 'blue'] as const;
 type Color = typeof colors[number];
 function listing(): readonly Color[] {
@@ -187,22 +238,22 @@ function listing(): readonly Color[] {
         </section>
 
         <section>
-            <h2>Changing values without changing name?</h2>
-            <div class="fragment">
-                <h3>Will you really write?</h3>
-                <pre><code data-trim class="typescript">
+          <h2>Changing values without changing name?</h2>
+          <div class="fragment">
+            <h3>Will you really write?</h3>
+            <pre><code data-trim class="typescript">
 enum Color {
     RED = 'yellow',
     GREEN = 'magenta',
     BLUE = 'cyan'
 }
             </code></pre>
-            </div>
+          </div>
         </section>
 
         <section>
-            <h2>Accessing values from a "namespace"?</h2>
-            <pre class="fragment"><code data-trim class="typescript">
+          <h2>Accessing values from a "namespace"?</h2>
+          <pre class="fragment"><code data-trim class="typescript">
 // file colors.ts
 const colors = ['red', 'green', 'blue'] as const;
 type Color = typeof colors[number];
@@ -216,61 +267,64 @@ import * as Color from "colors";
 
 const c = Color.RED;
               </code></pre>
-            <pre class="fragment"><code data-trim class="typescript">
+          <pre class="fragment"><code data-trim class="typescript">
 // If you really don't want to write
 const c2: Color = "red";
               </code></pre>
         </section>
         <section>
-            <h2>Union type are more extensible</h2>
-            <pre><code data-trim class="typescript">
+          <h2>Union type are more extensible</h2>
+          <pre><code data-trim class="typescript">
 const colors = ['red', 'green', 'blue'] as const;
 type BaseColor = typeof colors[number];
 type Color = BaseColor | {kind: 'Opacity', value: number}
               </code></pre>
         </section>
         <section>
-            <h2>Runtime construct in TypeScript</h2>
+          <h2>Runtime construct in TypeScript</h2>
 
-            <ul>
-                <li><code>enum</code> doesn't exist in ES (not even in stage 0)</li>
-                <li class="fragment">
-                    <a href="https://www.typescriptlang.org/docs/handbook/enums.html#objects-vs-enums">https://www.typescriptlang.org/docs/handbook/enums.html#objects-vs-enums</a>
-                    <blockquote>In modern TypeScript, you may not need an <code>enum</code> when an object with <code>as const</code> could suffice</blockquote>
-                </li>
-            </ul>
-
-
+          <ul>
+            <li><code>enum</code> doesn't exist in ES (not even in stage 0)</li>
+            <li class="fragment">
+              <a
+                href="https://www.typescriptlang.org/docs/handbook/enums.html#objects-vs-enums"
+                >https://www.typescriptlang.org/docs/handbook/enums.html#objects-vs-enums</a
+              >
+              <blockquote>
+                In modern TypeScript, you may not need an <code>enum</code> when
+                an object with <code>as const</code> could suffice
+              </blockquote>
+            </li>
+          </ul>
         </section>
 
         <section>
-            <h2>Conclusion</h2>
-            <h3 class="fragment">Should we use <code>enum</code>s?</h3>
+          <h2>Conclusion</h2>
+          <h3 class="fragment">Should we use <code>enum</code>s?</h3>
 
-            <h3 class="fragment">no.</h3>
-
+          <h3 class="fragment">no.</h3>
         </section>
 
         <section>
-            <h2>Questions?</h2>
+          <h2>Questions?</h2>
         </section>
+      </div>
     </div>
-</div>
 
-<script src="dist/reveal.js"></script>
-<script src="plugin/notes/notes.js"></script>
-<script src="plugin/markdown/markdown.js"></script>
-<script src="plugin/highlight/highlight.js"></script>
-<script>
-    // More info about initialization & config:
-    // - https://revealjs.com/initialization/
-    // - https://revealjs.com/config/
-    Reveal.initialize({
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
         hash: true,
 
         // Learn about plugins: https://revealjs.com/plugins/
         plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
-    });
-</script>
-</body>
+      });
+    </script>
+  </body>
 </html>
